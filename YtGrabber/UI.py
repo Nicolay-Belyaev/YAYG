@@ -28,7 +28,7 @@ def ui_constructor():
 
     root = Tk()
     root.title('YAYG - Yet Another Youtube Grabber')
-    root.geometry("750x700")
+    root.geometry("750x350")
 
     link_label = ttk.Label(text='Сюда вставить ссылку на Youtube:')
     link_label.pack(anchor=NW, padx=6, pady=6)
