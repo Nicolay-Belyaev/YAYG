@@ -10,10 +10,8 @@ def get_video_resolutions(url: str):
     """
     yt = YouTube(url=url)
     all_resolutions = [str(i.resolution) for i in yt.streams]
-    unique_resolutions = []
-    for i in all_resolutions:
-        if (i not in unique_resolutions) and (i != 'None'):
-            unique_resolutions.append(i)
+    unique_resolutions = set(all_resolutions)
+    unique_resolutions.remove('None')
     unique_resolutions = list(map(lambda x: int(x[:len(x) - 1]), unique_resolutions))
     unique_resolutions.sort()
     unique_resolutions = list(map(lambda x: (str(x) + 'p'), unique_resolutions))
@@ -28,10 +26,8 @@ def get_audio_quality(url: str):
     """
     yt = YouTube(url=url)
     all_quality = [str(i.abr) for i in yt.streams]
-    unique_quality = []
-    for i in all_quality:
-        if (i not in unique_quality) and (i != 'None'):
-            unique_quality.append(i)
+    unique_quality = set(all_quality)
+    unique_quality.remove('None')
     unique_quality = list(map(lambda x: int(x[:len(x) - 4]), unique_quality))
     unique_quality.sort()
     unique_quality = list(map(lambda x: (str(x) + 'kbps'), unique_quality))
