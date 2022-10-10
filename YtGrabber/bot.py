@@ -11,27 +11,24 @@ bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
-
+# TODO: сузить эксепты
 @dp.callback_query_handler(text='audio_only')
-async def mode_handler(message, state: FSMContext):
+async def mode_handler(callback, state: FSMContext):
     try:
         async with state.proxy() as data:
             url = data['url']
             chat_id = data['chat']
         audio_quality = get_audio_quality(f'r"{url}')
-        audio_buttons = []
-        for button in audio_quality:
-            audio_buttons.append([InlineKeyboardButton(text=button, callback_data=button)])
+        audio_buttons = [[InlineKeyboardButton(text=button, callback_data=button)] for button in audio_quality]
         keyboard_inline_buttons_audio = InlineKeyboardMarkup(inline_keyboard=audio_buttons)
         await bot.send_message(chat_id=chat_id,
                                text='Твоя выбирать, какое качество звука качать!',
                                reply_markup=keyboard_inline_buttons_audio)
-        await state.finish()
     except Exception:
         await bot.send_message(chat_id=chat_id,
                                text='Моя не смочь! Твоя пробовать опять! Твоя пробовать давать другой ссылка!')
 
-
+# TODO: сузить эксепты
 @dp.callback_query_handler(text='video_only')
 async def mode_handler(message, state: FSMContext):
     try:
@@ -39,19 +36,30 @@ async def mode_handler(message, state: FSMContext):
             url = data['url']
             chat_id = data['chat']
         video_quality = get_video_resolutions(f'r"{url}')
-        video_buttons = []
-        for button in video_quality:
-            video_buttons.append([InlineKeyboardButton(text=button, callback_data=button)])
+        video_buttons = [[InlineKeyboardButton(text=button, callback_data=button)] for button in video_quality]
         keyboard_inline_buttons_audio = InlineKeyboardMarkup(inline_keyboard=video_buttons)
         await bot.send_message(chat_id=chat_id,
                                text='Твоя выбирать, какое качество видео качать!',
                                reply_markup=keyboard_inline_buttons_audio)
-        await state.finish()
     except Exception:
         await bot.send_message(chat_id=chat_id,
                                text='Моя не смочь! Твоя пробовать опять! Твоя пробовать давать другой ссылка!')
 
 # @dp.callback_query_handler(text='audio_and_video')
+
+# TODO: время от времени загрузчик валиться с http.client.IncompleteRead: IncompleteRead
+@dp.callback_query_handler()
+async def downloader(callback: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        url = data['url']
+        chat_id = data['chat']
+    if 'kbps' in callback.data:
+        download_audio_only(str(url), callback.data)
+    if 'p' in callback.data:
+        download_video_only(str(url), callback.data)
+
+
+
 
 
 @dp.message_handler(commands=['help', 'start'])

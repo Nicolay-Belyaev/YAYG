@@ -1,6 +1,8 @@
 from pytube import YouTube
 from os import system, remove
 
+# TODO: проверить работу get_audio_quality и download_audio_only: иногда не качаются некоторые битрейты
+
 
 def get_video_resolutions(url: str):
     """
