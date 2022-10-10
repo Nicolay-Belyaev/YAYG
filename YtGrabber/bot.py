@@ -11,7 +11,15 @@ bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
+# TODO: сделать загрузку видео со звуком
+# TODO: сделать отправку медиа в чат (будет проблема с большими файлами)
+# TODO: вынести бота на хостинг (проще будет работать с большими файлами)
+# TODO: время от времени загрузчик валиться с http.client.IncompleteRead: IncompleteRead
 # TODO: сузить эксепты
+# TODO: написать комментарии ко всему
+# TODO: подумать над архитектурой + вынести дублирующийся код за функции
+
+
 @dp.callback_query_handler(text='audio_only')
 async def mode_handler(callback, state: FSMContext):
     try:
@@ -28,7 +36,7 @@ async def mode_handler(callback, state: FSMContext):
         await bot.send_message(chat_id=chat_id,
                                text='Моя не смочь! Твоя пробовать опять! Твоя пробовать давать другой ссылка!')
 
-# TODO: сузить эксепты
+
 @dp.callback_query_handler(text='video_only')
 async def mode_handler(message, state: FSMContext):
     try:
@@ -47,7 +55,7 @@ async def mode_handler(message, state: FSMContext):
 
 # @dp.callback_query_handler(text='audio_and_video')
 
-# TODO: время от времени загрузчик валиться с http.client.IncompleteRead: IncompleteRead
+
 @dp.callback_query_handler()
 async def downloader(callback: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
@@ -57,9 +65,6 @@ async def downloader(callback: types.CallbackQuery, state: FSMContext):
         download_audio_only(str(url), callback.data)
     if 'p' in callback.data:
         download_video_only(str(url), callback.data)
-
-
-
 
 
 @dp.message_handler(commands=['help', 'start'])
